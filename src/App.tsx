@@ -6,77 +6,74 @@ import {
 import "./App.css";
 import { useEffect, useRef } from "react";
 
-function createCanvas() {
-  const id = "canvas";
+function draw(canvas: IsometricCanvas) {
+  const commonProps = { height: 1, width: 1 };
 
-  function draw(container: HTMLElement) {
-    function drawCube(canvas: IsometricCanvas) {
-      const commonProps = { height: 1, width: 1 };
+  const top = new IsometricRectangle({
+    ...commonProps,
+    id: "cube-top",
+    planeView: PlaneView.TOP,
+  });
+  const right = new IsometricRectangle({
+    ...commonProps,
+    id: "cube-right",
+    className: "right-piece",
+    planeView: PlaneView.FRONT,
+  });
+  const left = new IsometricRectangle({
+    ...commonProps,
+    id: "cube-left",
+    planeView: PlaneView.SIDE,
+  });
 
-      const topPiece = new IsometricRectangle({
-        ...commonProps,
-        planeView: PlaneView.TOP,
-      });
-      const rightPiece = new IsometricRectangle({
-        ...commonProps,
-        planeView: PlaneView.FRONT,
-      });
-      const leftPiece = new IsometricRectangle({
-        ...commonProps,
-        planeView: PlaneView.SIDE,
-      });
+  top.top = 1;
+  right.right = 1;
+  left.left = 1;
 
-      topPiece.top = 1;
-      rightPiece.right = 1;
-      leftPiece.left = 1;
-
-      canvas
-        .addChild(topPiece)
-        .addChild(rightPiece)
-        .addChild(leftPiece);
-    }
-
-    const canvas = new IsometricCanvas({
-      id,
-      container,
-      backgroundColor: "#CCC",
-      scale: 120,
-      width: 500,
-      height: 320,
-    });
-
-    drawCube(canvas);
-  }
-
-  return {
-    remove: () => {
-      document.getElementById(id)?.remove();
-    },
-    draw: (container: HTMLElement) => {
-      draw(container);
-    },
-  };
+  canvas
+    .addChild(top)
+    .addChild(right)
+    .addChild(left);
 }
 
 function App() {
   const ref = useRef<HTMLDivElement>(null);
 
+  async function handleClick() {
+    if (ref.current) {
+      const clipboardItem = new ClipboardItem({
+        "text/plain": ref.current.innerHTML,
+      });
+      await navigator.clipboard.write([clipboardItem]);
+    }
+  }
+
   useEffect(() => {
-    const { draw, remove } = createCanvas();
+    let canvas: IsometricCanvas | null;
 
     if (ref.current) {
-      draw(ref.current);
+      canvas = new IsometricCanvas({
+        container: ref.current,
+        backgroundColor: "#00000000",
+        scale: 120,
+        width: 500,
+        height: 320,
+      });
+
+      draw(canvas);
     }
 
     return () => {
-      remove();
+      canvas?.getElement().remove();
     };
   }, []);
 
   return (
     <>
       <div ref={ref} />
-      A new start!
+      <button type="button" onClick={handleClick}>
+        Save SVG
+      </button>
     </>
   );
 }
