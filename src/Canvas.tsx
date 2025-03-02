@@ -1,59 +1,30 @@
-import { useEffect, useRef } from "react";
-import { IsometricCanvas } from "@elchininet/isometric";
+import useCube from "./useCube.tsx";
 
-export type ColorPalette = {
-  base: string;
-  lightShade: string;
-  darkShade: string;
+const monoColorPalette = {
+  base: "#FFFFFF",
+  lightShade: "#FFFFFF",
+  darkShade: "#343434",
 };
 
-type CanvasProps = {
-  draw: (canvas: IsometricCanvas, colorPalette: ColorPalette) => void;
-};
+function Canvas() {
+  const { ref, draw, saveSVG } = useCube(3, 0.8, monoColorPalette);
 
-function Canvas({ draw }: CanvasProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  async function handleClick() {
-    if (ref.current) {
-      const clipboardItem = new ClipboardItem({
-        "text/plain": ref.current.innerHTML,
-      });
-      await navigator.clipboard.write([clipboardItem]);
-    }
+  function handleOnSaveSVG() {
+    saveSVG();
   }
 
-  useEffect(() => {
-    let canvas: IsometricCanvas | null;
-
-    if (ref.current) {
-      canvas = new IsometricCanvas({
-        container: ref.current,
-        backgroundColor: "#00000000",
-        scale: 100,
-        width: 800,
-        height: 800,
-      });
-
-      const monoColorPalette = {
-        base: "#FFFFFF",
-        lightShade: "#FFFFFF",
-        darkShade: "#343434",
-      };
-
-      draw(canvas, monoColorPalette);
-    }
-
-    return () => {
-      canvas?.getElement().remove();
-    };
-  }, []);
+  function handleOnGenerate() {
+    draw();
+  }
 
   return (
     <>
       <div id="canvas-wrapper" ref={ref}></div>
-      <button type="button" onClick={handleClick}>
+      <button type="button" onClick={handleOnSaveSVG}>
         Save SVG
+      </button>
+      <button type="button" onClick={handleOnGenerate}>
+        Generate
       </button>
     </>
   );
