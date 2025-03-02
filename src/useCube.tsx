@@ -87,7 +87,7 @@ function useCube(
 
   useEffect(() => {
     if (isReady) handleDraw();
-  }, [isReady]);
+  }, [isReady, probability, size]);
 
   return {
     ref,

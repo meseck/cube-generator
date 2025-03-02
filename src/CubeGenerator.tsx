@@ -38,7 +38,6 @@ function CubeGenerator() {
         value={size}
         onChange={handleSizeChange}
       />
-
       <input
         type="range"
         min="0"
@@ -51,7 +50,7 @@ function CubeGenerator() {
         Save SVG
       </button>
       <button type="button" onClick={handleOnGenerate}>
-        Generate
+        Regenerate
       </button>
     </>
   );
