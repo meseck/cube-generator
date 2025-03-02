@@ -1,16 +1,12 @@
 import { ChangeEvent, useState } from "react";
 import useCube from "./useCube.tsx";
 
-const monoColorPalette = {
-  base: "#FFFFFF",
-  lightShade: "#FFFFFF",
-  darkShade: "#343434",
-};
-
 function CubeGenerator() {
   const [probability, setProbability] = useState(0.8);
   const [size, setSize] = useState(3);
-  const { ref, draw, saveSVG } = useCube(size, probability, monoColorPalette);
+  const [color, setColor] = useState("#FFFFFF");
+
+  const { ref, draw, saveSVG } = useCube(size, probability, color);
 
   function handleProbabilityChange(event: ChangeEvent<HTMLInputElement>) {
     setProbability(parseFloat(event.target.value));
@@ -18,6 +14,10 @@ function CubeGenerator() {
 
   function handleSizeChange(event: ChangeEvent<HTMLInputElement>) {
     setSize(parseInt(event.target.value));
+  }
+
+  function handleOnChangeColor(event: ChangeEvent<HTMLInputElement>) {
+    setColor(event.target.value);
   }
 
   function handleOnSaveSVG() {
@@ -46,6 +46,7 @@ function CubeGenerator() {
         value={probability}
         onChange={handleProbabilityChange}
       />
+      <input type="color" value={color} onChange={handleOnChangeColor} />
       <button type="button" onClick={handleOnSaveSVG}>
         Save SVG
       </button>

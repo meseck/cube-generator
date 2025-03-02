@@ -25,9 +25,15 @@ function getRandomBoolean(probability: number) {
 function useCube(
   size: number,
   probability: number,
-  colorPalette: ColorPalette,
+  baseColor: string,
 ) {
   const { ref, saveSVG, clear, canvas, isReady } = useIsometricCanvas();
+
+  const colorPalette = {
+    base: baseColor,
+    lightShade: "#FFFFFF",
+    darkShade: "#343434",
+  };
 
   function drawCube(x: number, y: number, z: number) {
     const commonProps: Omit<IsometricRectangleProps, "planeView"> = {
@@ -87,7 +93,7 @@ function useCube(
 
   useEffect(() => {
     if (isReady) handleDraw();
-  }, [isReady, probability, size]);
+  }, [isReady, probability, size, baseColor]);
 
   return {
     ref,
