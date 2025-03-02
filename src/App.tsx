@@ -7,8 +7,19 @@ import {
 } from "@elchininet/isometric";
 import "./App.css";
 import Canvas, { ColorPalette } from "./Canvas.tsx";
+import { randomBetween } from "@std/random";
+
+function getRandomBoolean(probability: number) {
+  if (probability < 0 || probability > 1) {
+    throw new Error("Probability must be between 0 and 1");
+  }
+  // Return true with the given probability, else false
+  return randomBetween(0, 1) < probability;
+}
 
 function draw(canvas: IsometricCanvas, colorPalette: ColorPalette) {
+  const cubeSize = 3;
+
   function drawCube(x: number, y: number, z: number) {
     const commonProps: Omit<IsometricRectangleProps, "planeView"> = {
       height: 1,
@@ -46,10 +57,12 @@ function draw(canvas: IsometricCanvas, colorPalette: ColorPalette) {
     canvas.addChild(cube);
   }
 
-  for (let x = 0; x < 3; x++) {
-    for (let y = 0; y < 3; y++) {
-      for (let z = 0; z < 3; z++) {
-        drawCube(x, y, z);
+  for (let x = 0; x < cubeSize; x++) {
+    for (let y = 0; y < cubeSize; y++) {
+      for (let z = 0; z < cubeSize; z++) {
+        if (getRandomBoolean(0.8)) {
+          drawCube(x, y, z);
+        }
       }
     }
   }
