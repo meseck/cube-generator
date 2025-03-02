@@ -4,7 +4,7 @@ import useCube from "./useCube.tsx";
 function CubeGenerator() {
   const [probability, setProbability] = useState(0.8);
   const [size, setSize] = useState(3);
-  const [color, setColor] = useState("#FFFFFF");
+  const [color, setColor] = useState("#ffffff");
 
   const { ref, draw, saveSVG } = useCube(size, probability, color);
 

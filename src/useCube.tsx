@@ -7,9 +7,11 @@ import {
 import useIsometricCanvas from "./useIsometricCanvas.tsx";
 import { randomBetween } from "@std/random/between";
 import { useEffect } from "react";
+import { convert, hexToRGB, OKLCH, serialize, sRGB } from "@texel/color";
 
 export type ColorPalette = {
   base: string;
+  background: string;
   lightShade: string;
   darkShade: string;
 };
@@ -22,18 +24,55 @@ function getRandomBoolean(probability: number) {
   return randomBetween(0, 1) < probability;
 }
 
+function createColorPalette(color: string): ColorPalette {
+  const baseColorRGB = hexToRGB(color);
+  const baseColor = convert(baseColorRGB, sRGB, OKLCH);
+
+  const lightColor = [
+    baseColor[0] / 2,
+    baseColor[1],
+    baseColor[2],
+  ];
+  const darkColor = [
+    baseColor[0] / 3,
+    baseColor[1],
+    baseColor[2],
+  ];
+  const backgroundColor = [
+    baseColor[0] / 10,
+    baseColor[1],
+    baseColor[2],
+  ];
+
+  return {
+    base: serialize(baseColor, OKLCH),
+    background: serialize(backgroundColor, OKLCH),
+    lightShade: serialize(lightColor, OKLCH),
+    darkShade: serialize(darkColor, OKLCH),
+  };
+}
+
 function useCube(
   size: number,
   probability: number,
-  baseColor: string,
+  color: string,
 ) {
+  const colorPalette = createColorPalette(color);
   const { ref, saveSVG, clear, canvas, isReady } = useIsometricCanvas();
 
-  const colorPalette = {
-    base: baseColor,
-    lightShade: "#FFFFFF",
-    darkShade: "#343434",
-  };
+  // This is a hack, currently there is no way to update the background
+  // color  of the canvas afterwards.
+  function drawBackground() {
+    const size = 999999;
+    const background = new IsometricRectangle({
+      height: size,
+      width: size,
+      top: size / 2,
+      fillColor: colorPalette.background,
+      planeView: PlaneView.TOP,
+    });
+    return background;
+  }
 
   function drawCube(x: number, y: number, z: number) {
     const commonProps: Omit<IsometricRectangleProps, "planeView"> = {
@@ -65,35 +104,39 @@ function useCube(
 
     const cube = new IsometricGroup({ top: z, right: x, left: y });
     cube.addChildren(top, right, left);
-    // Let user remove individual cubes via mouse click
+    // Let user remove individual cubes via mouse click.
     cube.addEventListener("click", () => cube.clear());
     return cube;
   }
 
   function drawCubeGrid() {
+    const cubeGrid = new IsometricGroup();
+
     for (let x = 0; x < size; x++) {
       for (let y = 0; y < size; y++) {
         for (let z = 0; z < size; z++) {
           if (getRandomBoolean(probability)) {
-            canvas?.addChild(drawCube(x, y, z));
+            cubeGrid.addChild(drawCube(x, y, z));
           }
         }
       }
     }
+    return cubeGrid;
   }
 
   function handleDraw() {
     if (canvas) {
       canvas.clear();
-      // This keeps the cube evenly sized
+      // This keeps the cube evenly sized.
       canvas.scale = 300 / size;
-      drawCubeGrid();
+      canvas.addChild(drawBackground());
+      canvas.addChild(drawCubeGrid());
     }
   }
 
   useEffect(() => {
     if (isReady) handleDraw();
-  }, [isReady, probability, size, baseColor]);
+  }, [isReady, probability, size, color]);
 
   return {
     ref,
