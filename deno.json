@@ -16,6 +16,7 @@
     "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.4",
     "@elchininet/isometric": "npm:@elchininet/isometric@^3.11.1",
     "@std/random": "jsr:@std/random@^0.1.0",
+    "@texel/color": "npm:@texel/color@^1.1.9",
     "@types/react": "npm:@types/react@^19.0.10",
     "@types/react-dom": "npm:@types/react-dom@^19.0.4",
     "@vitejs/plugin-react": "npm:@vitejs/plugin-react@^4.3.4",
