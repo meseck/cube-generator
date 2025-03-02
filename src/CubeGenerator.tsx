@@ -9,10 +9,15 @@ const monoColorPalette = {
 
 function CubeGenerator() {
   const [probability, setProbability] = useState(0.8);
-  const { ref, draw, saveSVG } = useCube(3, 0.8, monoColorPalette);
+  const [size, setSize] = useState(3);
+  const { ref, draw, saveSVG } = useCube(size, probability, monoColorPalette);
 
   function handleProbabilityChange(event: ChangeEvent<HTMLInputElement>) {
     setProbability(parseFloat(event.target.value));
+  }
+
+  function handleSizeChange(event: ChangeEvent<HTMLInputElement>) {
+    setSize(parseInt(event.target.value));
   }
 
   function handleOnSaveSVG() {
@@ -26,6 +31,14 @@ function CubeGenerator() {
   return (
     <>
       <div id="canvas-wrapper" ref={ref}></div>
+      <input
+        type="range"
+        min="1"
+        max="10"
+        value={size}
+        onChange={handleSizeChange}
+      />
+
       <input
         type="range"
         min="0"
