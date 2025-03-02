@@ -6,13 +6,7 @@ import {
   PlaneView,
 } from "@elchininet/isometric";
 import "./App.css";
-import { useEffect, useRef } from "react";
-
-type ColorPalette = {
-  base: string;
-  lightShade: string;
-  darkShade: string;
-};
+import Canvas, { ColorPalette } from "./Canvas.tsx";
 
 function draw(canvas: IsometricCanvas, colorPalette: ColorPalette) {
   function drawCube(x: number, y: number, z: number) {
@@ -92,49 +86,9 @@ function draw(canvas: IsometricCanvas, colorPalette: ColorPalette) {
 }
 
 function App() {
-  const ref = useRef<HTMLDivElement>(null);
-
-  async function handleClick() {
-    if (ref.current) {
-      const clipboardItem = new ClipboardItem({
-        "text/plain": ref.current.innerHTML,
-      });
-      await navigator.clipboard.write([clipboardItem]);
-    }
-  }
-
-  useEffect(() => {
-    let canvas: IsometricCanvas | null;
-
-    if (ref.current) {
-      canvas = new IsometricCanvas({
-        container: ref.current,
-        backgroundColor: "#00000000",
-        scale: 100,
-        width: 800,
-        height: 800,
-      });
-
-      const monoColorPalette = {
-        base: "#FFFFFF",
-        lightShade: "#FFFFFF",
-        darkShade: "#343434",
-      };
-
-      draw(canvas, monoColorPalette);
-    }
-
-    return () => {
-      canvas?.getElement().remove();
-    };
-  }, []);
-
   return (
     <>
-      <div id="canvas-wrapper" ref={ref} />
-      <button type="button" onClick={handleClick}>
-        Save SVG
-      </button>
+      <Canvas draw={draw} />
     </>
   );
 }
