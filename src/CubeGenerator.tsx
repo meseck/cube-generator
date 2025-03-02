@@ -7,7 +7,7 @@ const monoColorPalette = {
   darkShade: "#343434",
 };
 
-function Canvas() {
+function CubeGenerator() {
   const [probability, setProbability] = useState(0.8);
   const { ref, draw, saveSVG } = useCube(3, 0.8, monoColorPalette);
 
@@ -44,4 +44,4 @@ function Canvas() {
   );
 }
 
-export default Canvas;
+export default CubeGenerator;

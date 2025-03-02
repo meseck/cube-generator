@@ -1,10 +1,10 @@
 import "./App.css";
-import Canvas from "./Canvas.tsx";
+import CubeGenerator from "./CubeGenerator.tsx";
 
 function App() {
   return (
     <>
-      <Canvas />
+      <CubeGenerator />
     </>
   );
 }
