@@ -78,8 +78,12 @@ function useCube(
   }
 
   function handleDraw() {
-    canvas?.clear();
-    drawCubeGrid();
+    if (canvas) {
+      canvas.clear();
+      // This keeps the cube evenly sized
+      canvas.scale = 300 / size;
+      drawCubeGrid();
+    }
   }
 
   useEffect(() => {
