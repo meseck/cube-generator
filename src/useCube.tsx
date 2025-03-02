@@ -39,21 +39,18 @@ function useCube(
     };
 
     const top = new IsometricRectangle({
-      id: "cube-top",
       top: 1,
       fillColor: colorPalette.base,
       planeView: PlaneView.TOP,
       ...commonProps,
     });
     const right = new IsometricRectangle({
-      id: "cube-right",
       right: 1,
       fillColor: colorPalette.lightShade,
       planeView: PlaneView.FRONT,
       ...commonProps,
     });
     const left = new IsometricRectangle({
-      id: "cube-left",
       left: 1,
       fillColor: colorPalette.darkShade,
       planeView: PlaneView.SIDE,
@@ -62,6 +59,8 @@ function useCube(
 
     const cube = new IsometricGroup({ top: z, right: x, left: y });
     cube.addChildren(top, right, left);
+    // Let user remove individual cubes via mouse click
+    cube.addEventListener("click", () => cube.clear());
     return cube;
   }
 
