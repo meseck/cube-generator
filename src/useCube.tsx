@@ -58,7 +58,7 @@ function useCube(
   color: string,
 ) {
   const colorPalette = createColorPalette(color);
-  const { ref, saveSVG, clear, canvas, isReady } = useIsometricCanvas();
+  const { ref, copySVG, clear, canvas, isReady } = useIsometricCanvas();
 
   // This is a hack, currently there is no way to update the background
   // color  of the canvas afterwards.
@@ -140,7 +140,7 @@ function useCube(
 
   return {
     ref,
-    saveSVG,
+    copySVG,
     clear,
     draw: handleDraw,
   };

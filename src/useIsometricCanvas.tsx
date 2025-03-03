@@ -6,7 +6,7 @@ function useIsometricCanvas() {
   const canvasRef = useRef<IsometricCanvas | null>(null);
   const [isReady, setIsReady] = useState(false);
 
-  async function handleSaveSVG() {
+  async function handleCopySVG() {
     if (ref.current) {
       const clipboardItem = new ClipboardItem({
         "text/plain": ref.current.innerHTML,
@@ -40,7 +40,7 @@ function useIsometricCanvas() {
   return {
     ref,
     canvas: canvasRef.current,
-    saveSVG: handleSaveSVG,
+    copySVG: handleCopySVG,
     clear: handleClear,
     isReady,
   };

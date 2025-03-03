@@ -1,12 +1,13 @@
 import { ChangeEvent, useState } from "react";
 import useCube from "./useCube.tsx";
+import styles from "./CubeGenerator.module.css";
 
 function CubeGenerator() {
   const [probability, setProbability] = useState(0.8);
   const [size, setSize] = useState(3);
   const [color, setColor] = useState("#ffffff");
 
-  const { ref, draw, saveSVG } = useCube(size, probability, color);
+  const { ref, draw, copySVG } = useCube(size, probability, color);
 
   function handleProbabilityChange(event: ChangeEvent<HTMLInputElement>) {
     setProbability(parseFloat(event.target.value));
@@ -20,8 +21,8 @@ function CubeGenerator() {
     setColor(event.target.value);
   }
 
-  function handleOnSaveSVG() {
-    saveSVG();
+  function handleOnCopySVG() {
+    copySVG();
   }
 
   function handleOnGenerate() {
@@ -30,29 +31,51 @@ function CubeGenerator() {
 
   return (
     <>
-      <div id="canvas-wrapper" ref={ref}></div>
-      <input
-        type="range"
-        min="1"
-        max="10"
-        value={size}
-        onChange={handleSizeChange}
-      />
-      <input
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-        value={probability}
-        onChange={handleProbabilityChange}
-      />
-      <input type="color" value={color} onChange={handleOnChangeColor} />
-      <button type="button" onClick={handleOnSaveSVG}>
-        Save SVG
-      </button>
-      <button type="button" onClick={handleOnGenerate}>
-        Regenerate
-      </button>
+      <div className={styles.canvas} ref={ref}></div>
+      <div className={styles.menu}>
+        <div className={styles.config}>
+          <div className={styles.input}>
+            <label htmlFor="size">Size</label>
+            <input
+              id="size"
+              type="range"
+              min="1"
+              max="6"
+              value={size}
+              onChange={handleSizeChange}
+            />
+          </div>
+          <div className={styles.input}>
+            <label htmlFor="probability">Probability</label>
+            <input
+              id="probability"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={probability}
+              onChange={handleProbabilityChange}
+            />
+          </div>
+          <div className={styles.input}>
+            <label htmlFor="color">Color</label>
+            <input
+              id="color"
+              type="color"
+              value={color}
+              onChange={handleOnChangeColor}
+            />
+          </div>
+        </div>
+        <div className={styles.actions}>
+          <button type="button" onClick={handleOnCopySVG}>
+            Copy SVG
+          </button>
+          <button type="button" onClick={handleOnGenerate}>
+            Regenerate
+          </button>
+        </div>
+      </div>
     </>
   );
 }
