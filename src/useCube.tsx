@@ -45,10 +45,10 @@ function createColorPalette(color: string): ColorPalette {
   ];
 
   return {
-    base: serialize(baseColor, OKLCH),
-    background: serialize(backgroundColor, OKLCH),
-    lightShade: serialize(lightColor, OKLCH),
-    darkShade: serialize(darkColor, OKLCH),
+    base: serialize(baseColor, OKLCH, sRGB),
+    background: serialize(backgroundColor, OKLCH, sRGB),
+    lightShade: serialize(lightColor, OKLCH, sRGB),
+    darkShade: serialize(darkColor, OKLCH, sRGB),
   };
 }
 
