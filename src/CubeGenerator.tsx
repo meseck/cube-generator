@@ -35,61 +35,59 @@ function CubeGenerator() {
   }
 
   return (
-    <>
+    <div className={styles.wrapper}>
       <div className={styles.canvas} ref={ref}></div>
       <div className={styles.menu}>
-        <div className={styles.config}>
-          <div className={styles.input}>
-            <label htmlFor="size">Shape</label>
-            <select id="shape" value={shape} onChange={handleShapeChange}>
-              <option value="symmetric">Symmetric</option>
-              <option value="asymmetric">Asymmetric</option>
-            </select>
-          </div>
-          <div className={styles.input}>
-            <label htmlFor="size">Size</label>
-            <input
-              id="size"
-              type="range"
-              min="3"
-              max="7"
-              step="2"
-              value={size}
-              onChange={handleSizeChange}
-            />
-          </div>
-          <div className={styles.input}>
-            <label htmlFor="probability">Density</label>
-            <input
-              id="probability"
-              type="range"
-              min="0.1"
-              max="0.9"
-              step="0.1"
-              value={probability}
-              onChange={handleProbabilityChange}
-            />
-          </div>
-          <div className={styles.input}>
-            <label htmlFor="color">Color</label>
-            <input
-              id="color"
-              type="color"
-              value={color}
-              onChange={handleOnChangeColor}
-            />
-          </div>
+        <div className={styles.input}>
+          <label htmlFor="size">Shape</label>
+          <select id="shape" value={shape} onChange={handleShapeChange}>
+            <option value="symmetric">Symmetric</option>
+            <option value="asymmetric">Asymmetric</option>
+          </select>
+        </div>
+        <div className={styles.input}>
+          <label htmlFor="size">Size</label>
+          <input
+            id="size"
+            type="range"
+            min="3"
+            max="7"
+            step="2"
+            value={size}
+            onChange={handleSizeChange}
+          />
+        </div>
+        <div className={styles.input}>
+          <label htmlFor="probability">Density</label>
+          <input
+            id="probability"
+            type="range"
+            min="0.1"
+            max="0.9"
+            step="0.1"
+            value={probability}
+            onChange={handleProbabilityChange}
+          />
+        </div>
+        <div className={styles.input}>
+          <label htmlFor="color">Color</label>
+          <input
+            id="color"
+            type="color"
+            value={color}
+            onChange={handleOnChangeColor}
+          />
+        </div>
+        <div className={styles.actions}>
+          <button type="button" onClick={handleOnCopySVG}>
+            Copy SVG
+          </button>
+          <button type="button" onClick={handleOnRegenerate}>
+            Regenerate
+          </button>
         </div>
       </div>
-      <div className={styles.actions}>
-        <button type="button" onClick={handleOnCopySVG}>
-          Copy SVG
-        </button>
-        <button type="button" onClick={handleOnRegenerate}>
-          Regenerate
-        </button>
-      </div>
-    </>
+    </div>
   );
 }
 

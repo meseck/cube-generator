@@ -1,7 +1,10 @@
+.wrapper {
+  min-width: 320px;
+  max-width: 100%;
+}
+
 .canvas {
   display: grid;
-  width: 800px;
-  aspect-ratio: 1 / 1;
 
   & svg {
     width: 100%;
@@ -11,17 +14,12 @@
 
 .menu {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   padding: 1rem;
-}
-
-.config {
-  display: flex;
-  flex-grow: 1;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
+  row-gap: 0.5rem;
+  column-gap: 1rem;
 }
 
 .input {
@@ -34,5 +32,4 @@
   display: flex;
   justify-content: right;
   gap: 0.5rem;
-  padding: 1rem 0;
 }
