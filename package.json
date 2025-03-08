@@ -2,21 +2,30 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "cube-generator",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/main.js"
+    },
+    "./style.css": "./dist/main.css"
+  },
   "packageManager": "pnpm@10.6.1",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "format": "prettier --write --plugin-search-dir=. ."
+    "format": "prettier --write ./src",
+    "postinstall": "pnpm run build"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "dependencies": {
     "@elchininet/isometric": "^3.11.1",
-    "@texel/color": "^1.1.9",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "@texel/color": "^1.1.9"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
