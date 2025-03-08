@@ -8,7 +8,7 @@ function CubeGenerator() {
   const [color, setColor] = useState("#ffffff");
   const [probability, setProbability] = useState(0.8);
 
-  const { ref, draw, copySVG } = useCube(size, shape, color, probability);
+  const { ref, regenerate, copySVG } = useCube(size, shape, color, probability);
 
   function handleShapeChange(event: ChangeEvent<HTMLSelectElement>) {
     setShape(event.target.value as Shape);
@@ -30,8 +30,8 @@ function CubeGenerator() {
     copySVG();
   }
 
-  function handleOnGenerate() {
-    draw();
+  function handleOnRegenerate() {
+    regenerate();
   }
 
   return (
@@ -41,11 +41,7 @@ function CubeGenerator() {
         <div className={styles.config}>
           <div className={styles.input}>
             <label htmlFor="size">Shape</label>
-            <select
-              id="shape"
-              value={shape}
-              onChange={handleShapeChange}
-            >
+            <select id="shape" value={shape} onChange={handleShapeChange}>
               <option value="symmetric">Symmetric</option>
               <option value="asymmetric">Asymmetric</option>
             </select>
@@ -89,7 +85,7 @@ function CubeGenerator() {
         <button type="button" onClick={handleOnCopySVG}>
           Copy SVG
         </button>
-        <button type="button" onClick={handleOnGenerate}>
+        <button type="button" onClick={handleOnRegenerate}>
           Regenerate
         </button>
       </div>
