@@ -6,17 +6,25 @@ function useIsometricCanvas() {
   const canvasRef = useRef<IsometricCanvas | null>(null);
   const [isReady, setIsReady] = useState(false);
 
-  async function handleCopySVG() {
-    if (ref.current) {
-      const clipboardItem = new ClipboardItem({
-        "text/plain": ref.current.innerHTML,
-      });
-      await navigator.clipboard.write([clipboardItem]);
-    }
-  }
-
   function handleClear() {
     canvasRef.current?.clear();
+  }
+
+  function handleDownloadSVG() {
+    if (canvasRef.current) {
+      const svg = canvasRef.current.getElement().outerHTML;
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const blobURL = URL.createObjectURL(blob);
+
+      const tempAnchor = document.createElement('a') as HTMLAnchorElement;
+      tempAnchor.href = blobURL;
+      tempAnchor.download = 'cube.svg';
+      document.body.appendChild(tempAnchor);
+      tempAnchor.click();
+
+      document.body.removeChild(tempAnchor);
+      URL.revokeObjectURL(blobURL);
+    }
   }
 
   useEffect(() => {
@@ -28,6 +36,10 @@ function useIsometricCanvas() {
         width: 800,
         height: 800,
       });
+
+      // Add missing namespace
+      canvas.getElement().setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
       canvasRef.current = canvas;
       setIsReady(true);
     }
@@ -40,7 +52,7 @@ function useIsometricCanvas() {
   return {
     ref,
     canvas: canvasRef.current,
-    copySVG: handleCopySVG,
+    downloadSVG: handleDownloadSVG,
     clear: handleClear,
     isReady,
   };

@@ -237,7 +237,7 @@ function useCube(
 ) {
   const [seed, setSeed] = useState(crypto.randomUUID());
   const colorPalette = createColorPalette(color);
-  const { ref, copySVG, clear, canvas, isReady } = useIsometricCanvas();
+  const { ref, downloadSVG, clear, canvas, isReady } = useIsometricCanvas();
 
   function handleOnRegenerate() {
     setSeed(crypto.randomUUID());
@@ -249,7 +249,7 @@ function useCube(
 
   return {
     ref,
-    copySVG,
+    downloadSVG,
     clear,
     regenerate: handleOnRegenerate,
   };
