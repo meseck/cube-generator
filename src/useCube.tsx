@@ -179,11 +179,8 @@ function createMirroredCube(size: number, pattern: boolean[][]) {
           cube[x][y][z] = pattern[x][y];
           // Inner part
         } else {
-          // Keep the inner part empty
-          // cube[x][y][z] = false;
-
-          // Fill with the same pattern
-          cube[x][y][z] = pattern[x][y];
+          // Keep the inner part of the cube empty
+          cube[x][y][z] = false;
         }
       }
     }
