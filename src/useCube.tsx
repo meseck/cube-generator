@@ -82,39 +82,12 @@ function drawSymmetricCubeGrid(
   return cubeGrid;
 }
 
-function handleDraw(
-  canvas: IsometricCanvas | null,
-  size: number,
-  shape: Shape,
-  colorPalette: ColorPalette,
-  probability: number,
-) {
+// This is a hack. Currently we cannot update the background via the libraries API.
+function updateBackground(canvas: IsometricCanvas | null, colorPalette: ColorPalette) {
   if (canvas) {
-    canvas.clear();
-    // This keeps the cube evenly sized.
-    canvas.scale = 300 / size;
-    canvas.addChild(drawBackground(colorPalette));
-
-    if (shape === "symmetric") {
-      canvas.addChild(drawSymmetricCubeGrid(size, colorPalette, probability));
-    } else {
-      canvas.addChild(drawAsymmetricCubeGrid(size, colorPalette, probability));
-    }
+    const rectSVGElement = canvas.getElement().getElementsByTagName('rect')[0] as SVGRectElement
+    rectSVGElement.setAttribute('fill', colorPalette.background)
   }
-}
-
-// This is a hack, currently there is no way to update the background
-// color  of the canvas afterwards.
-function drawBackground(colorPalette: ColorPalette) {
-  const size = 999999;
-  const background = new IsometricRectangle({
-    height: size,
-    width: size,
-    top: size / 2,
-    fillColor: colorPalette.background,
-    planeView: PlaneView.TOP,
-  });
-  return background;
 }
 
 function drawCube(x: number, y: number, z: number, colorPalette: ColorPalette) {
@@ -232,6 +205,29 @@ function createRandomSymmetricPattern(
 
   return pattern;
 }
+
+function handleDraw(
+  canvas: IsometricCanvas | null,
+  size: number,
+  shape: Shape,
+  colorPalette: ColorPalette,
+  probability: number,
+) {
+  if (canvas) {
+    canvas.clear();
+    // This keeps the cube evenly sized.
+    canvas.scale = 300 / size;
+
+    updateBackground(canvas, colorPalette);
+
+    if (shape === "symmetric") {
+      canvas.addChild(drawSymmetricCubeGrid(size, colorPalette, probability));
+    } else {
+      canvas.addChild(drawAsymmetricCubeGrid(size, colorPalette, probability));
+    }
+  }
+}
+
 
 function useCube(
   size: number,
