@@ -48,6 +48,7 @@ function CubeGenerator() {
         <div className={styles.input}>
           <label htmlFor="size">Size</label>
           <input
+            className={styles.slider}
             id="size"
             type="range"
             min="3"
@@ -60,6 +61,7 @@ function CubeGenerator() {
         <div className={styles.input}>
           <label htmlFor="probability">Density</label>
           <input
+            className={styles.slider}
             id="probability"
             type="range"
             min="0.1"
