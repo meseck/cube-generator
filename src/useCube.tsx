@@ -90,9 +90,9 @@ function updateColor(canvas: IsometricCanvas | null, colorPalette: ColorPalette)
       sides[0].setAttribute('fill', colorPalette.base)
       sides[1].setAttribute('fill', colorPalette.lightShade)
       sides[2].setAttribute('fill', colorPalette.darkShade)
+      sides[1].setAttribute('stroke', colorPalette.darkShade)
       sides[2].setAttribute('stroke', colorPalette.darkShade)
       sides[0].setAttribute('stroke', colorPalette.darkShade)
-      sides[1].setAttribute('stroke', colorPalette.darkShade)
     }
   }
 }
@@ -136,7 +136,7 @@ function drawCube(x: number, y: number, z: number) {
   const cube = new IsometricGroup({ top: z, right: x, left: y });
   cube.addChildren(top, right, left);
   // Let user remove individual cubes via mouse click.
-  cube.addEventListener("click", () => cube.clear());
+  cube.addEventListener("click", () => cube.getElement().remove());
   return cube;
 }
 
