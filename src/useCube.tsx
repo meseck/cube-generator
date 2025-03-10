@@ -18,14 +18,6 @@ export type ColorPalette = {
   darkShade: string;
 };
 
-function getRandomBoolean(probability: number) {
-  if (probability < 0 || probability > 1) {
-    throw new Error("Probability must be between 0 and 1");
-  }
-  // Return true with the given probability, else false
-  return Math.random() < probability ? true : false;
-}
-
 function createColorPalette(color: string): ColorPalette {
   const baseColorRGB = hexToRGB(color);
   const baseColor = convert(baseColorRGB, sRGB, OKLCH);
@@ -42,9 +34,18 @@ function createColorPalette(color: string): ColorPalette {
   };
 }
 
+const defaultColorPalette = createColorPalette("#ffffff")
+
+function getRandomBoolean(probability: number) {
+  if (probability < 0 || probability > 1) {
+    throw new Error("Probability must be between 0 and 1");
+  }
+  // Return true with the given probability, else false
+  return Math.random() < probability ? true : false;
+}
+
 function drawAsymmetricCubeGrid(
   size: number,
-  colorPalette: ColorPalette,
   probability: number,
 ) {
   const cubeGrid = new IsometricGroup();
@@ -53,7 +54,7 @@ function drawAsymmetricCubeGrid(
     for (let y = 0; y < size; y++) {
       for (let z = 0; z < size; z++) {
         if (getRandomBoolean(probability)) {
-          cubeGrid.addChild(drawCube(x, y, z, colorPalette));
+          cubeGrid.addChild(drawCube(x, y, z));
         }
       }
     }
@@ -63,18 +64,17 @@ function drawAsymmetricCubeGrid(
 
 function drawSymmetricCubeGrid(
   size: number,
-  colorPalette: ColorPalette,
   probability: number,
 ) {
   const cubeGrid = new IsometricGroup();
-  const pattern = createRandomSymmetricPattern(size, colorPalette, probability);
+  const pattern = createRandomSymmetricPattern(size, probability);
   const mirroredCube = createMirroredCube(size, pattern);
 
   for (let x = 0; x < size; x++) {
     for (let y = 0; y < size; y++) {
       for (let z = 0; z < size; z++) {
         if (mirroredCube[x][y][z]) {
-          cubeGrid.addChild(drawCube(x, y, z, colorPalette));
+          cubeGrid.addChild(drawCube(x, y, z));
         }
       }
     }
@@ -82,38 +82,53 @@ function drawSymmetricCubeGrid(
   return cubeGrid;
 }
 
-// This is a hack. Currently we cannot update the background via the libraries API.
-function updateBackground(canvas: IsometricCanvas | null, colorPalette: ColorPalette) {
+function updateColor(canvas: IsometricCanvas | null, colorPalette: ColorPalette) {
   if (canvas) {
-    const rectSVGElement = canvas.getElement().getElementsByTagName('rect')[0] as SVGRectElement
-    rectSVGElement.setAttribute('fill', colorPalette.background)
+    const cubes = canvas.getElement().getElementsByTagName('g')
+    for (const cube of cubes) {
+      const sides = cube.getElementsByTagName('path');
+      sides[0].setAttribute('fill', colorPalette.base)
+      sides[1].setAttribute('fill', colorPalette.lightShade)
+      sides[2].setAttribute('fill', colorPalette.darkShade)
+      sides[2].setAttribute('stroke', colorPalette.darkShade)
+      sides[0].setAttribute('stroke', colorPalette.darkShade)
+      sides[1].setAttribute('stroke', colorPalette.darkShade)
+    }
   }
 }
 
-function drawCube(x: number, y: number, z: number, colorPalette: ColorPalette) {
+// This is a hack. Currently we cannot update the background via the libraries API.
+function updateBackgroundColor(canvas: IsometricCanvas | null, colorPalette: ColorPalette) {
+  if (canvas) {
+    const background = canvas.getElement().getElementsByTagName('rect')[0]
+    background.setAttribute('fill', colorPalette.background)
+  }
+}
+
+function drawCube(x: number, y: number, z: number) {
   const commonProps: Omit<IsometricRectangleProps, "planeView"> = {
     height: 1,
     width: 1,
-    strokeColor: colorPalette.darkShade,
+    strokeColor: defaultColorPalette.darkShade,
     strokeWidth: 6,
     // fillOpacity: 0.5,
   };
 
   const top = new IsometricRectangle({
     top: 1,
-    fillColor: colorPalette.base,
+    fillColor: defaultColorPalette.base,
     planeView: PlaneView.TOP,
     ...commonProps,
   });
   const right = new IsometricRectangle({
     right: 1,
-    fillColor: colorPalette.lightShade,
+    fillColor: defaultColorPalette.lightShade,
     planeView: PlaneView.FRONT,
     ...commonProps,
   });
   const left = new IsometricRectangle({
     left: 1,
-    fillColor: colorPalette.darkShade,
+    fillColor: defaultColorPalette.darkShade,
     planeView: PlaneView.SIDE,
     ...commonProps,
   });
@@ -164,7 +179,6 @@ function createMirroredCube(size: number, pattern: boolean[][]) {
 
 function createRandomSymmetricPattern(
   size: number,
-  colorPalette: ColorPalette,
   probability: number,
 ) {
   if (size <= 0) {
@@ -200,7 +214,7 @@ function createRandomSymmetricPattern(
 
   // If the pattern is all true or all false, regenerate
   if (allTrue || allFalse) {
-    return createRandomSymmetricPattern(size, colorPalette, probability);
+    return createRandomSymmetricPattern(size, probability);
   }
 
   return pattern;
@@ -210,20 +224,18 @@ function handleDraw(
   canvas: IsometricCanvas | null,
   size: number,
   shape: Shape,
-  colorPalette: ColorPalette,
   probability: number,
 ) {
   if (canvas) {
     canvas.clear();
+
     // This keeps the cube evenly sized.
     canvas.scale = 300 / size;
 
-    updateBackground(canvas, colorPalette);
-
     if (shape === "symmetric") {
-      canvas.addChild(drawSymmetricCubeGrid(size, colorPalette, probability));
+      canvas.addChild(drawSymmetricCubeGrid(size, probability));
     } else {
-      canvas.addChild(drawAsymmetricCubeGrid(size, colorPalette, probability));
+      canvas.addChild(drawAsymmetricCubeGrid(size, probability));
     }
   }
 }
@@ -244,8 +256,15 @@ function useCube(
   }
 
   useEffect(() => {
-    if (isReady) handleDraw(canvas, size, shape, colorPalette, probability);
-  }, [seed, isReady, shape, size, color, probability, canvas, colorPalette]);
+    if (isReady) {
+      handleDraw(canvas, size, shape, probability)
+    };
+  }, [canvas, isReady, probability, shape, size, seed]);
+
+  useEffect(() => {
+    updateColor(canvas, colorPalette)
+    updateBackgroundColor(canvas, colorPalette)
+  }, [canvas, colorPalette]);
 
   return {
     ref,
