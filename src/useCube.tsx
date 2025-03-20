@@ -1,12 +1,12 @@
 import {
-  IsometricCanvas,
+  type IsometricCanvas,
   IsometricGroup,
   IsometricRectangle,
-  IsometricRectangleProps,
+  type IsometricRectangleProps,
   PlaneView,
 } from "@elchininet/isometric";
 import useIsometricCanvas from "./useIsometricCanvas.tsx";
-import { useEffect, useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import { convert, hexToRGB, OKLCH, serialize, sRGB } from "@texel/color";
 
 export type Shape = "symmetric" | "asymmetric";
@@ -34,20 +34,17 @@ function createColorPalette(color: string): ColorPalette {
   };
 }
 
-const defaultColorPalette = createColorPalette("#ffffff")
+const defaultColorPalette = createColorPalette("#ffffff");
 
 function getRandomBoolean(probability: number) {
   if (probability < 0 || probability > 1) {
     throw new Error("Probability must be between 0 and 1");
   }
   // Return true with the given probability, else false
-  return Math.random() < probability ? true : false;
+  return Math.random() < probability;
 }
 
-function drawAsymmetricCubeGrid(
-  size: number,
-  probability: number,
-) {
+function drawAsymmetricCubeGrid(size: number, probability: number) {
   const cubeGrid = new IsometricGroup();
 
   for (let x = 0; x < size; x++) {
@@ -62,10 +59,7 @@ function drawAsymmetricCubeGrid(
   return cubeGrid;
 }
 
-function drawSymmetricCubeGrid(
-  size: number,
-  probability: number,
-) {
+function drawSymmetricCubeGrid(size: number, probability: number) {
   const cubeGrid = new IsometricGroup();
   const pattern = createRandomSymmetricPattern(size, probability);
   const mirroredCube = createMirroredCube(size, pattern);
@@ -82,26 +76,32 @@ function drawSymmetricCubeGrid(
   return cubeGrid;
 }
 
-function updateColor(canvas: IsometricCanvas | null, colorPalette: ColorPalette) {
+function updateColor(
+  canvas: IsometricCanvas | null,
+  colorPalette: ColorPalette,
+) {
   if (canvas) {
-    const cubes = canvas.getElement().getElementsByTagName('g')
+    const cubes = canvas.getElement().getElementsByTagName("g");
     for (const cube of cubes) {
-      const sides = cube.getElementsByTagName('path');
-      sides[0].setAttribute('fill', colorPalette.base)
-      sides[1].setAttribute('fill', colorPalette.lightShade)
-      sides[2].setAttribute('fill', colorPalette.darkShade)
-      sides[1].setAttribute('stroke', colorPalette.darkShade)
-      sides[2].setAttribute('stroke', colorPalette.darkShade)
-      sides[0].setAttribute('stroke', colorPalette.darkShade)
+      const sides = cube.getElementsByTagName("path");
+      sides[0].setAttribute("fill", colorPalette.base);
+      sides[1].setAttribute("fill", colorPalette.lightShade);
+      sides[2].setAttribute("fill", colorPalette.darkShade);
+      sides[1].setAttribute("stroke", colorPalette.darkShade);
+      sides[2].setAttribute("stroke", colorPalette.darkShade);
+      sides[0].setAttribute("stroke", colorPalette.darkShade);
     }
   }
 }
 
-// This is a hack. Currently we cannot update the background via the libraries API.
-function updateBackgroundColor(canvas: IsometricCanvas | null, colorPalette: ColorPalette) {
+// This is a 'hack'. Currently we cannot update the background via the libraries API.
+function updateBackgroundColor(
+  canvas: IsometricCanvas | null,
+  colorPalette: ColorPalette,
+) {
   if (canvas) {
-    const background = canvas.getElement().getElementsByTagName('rect')[0]
-    background.setAttribute('fill', colorPalette.background)
+    const background = canvas.getElement().getElementsByTagName("rect")[0];
+    background.setAttribute("fill", colorPalette.background);
   }
 }
 
@@ -177,10 +177,7 @@ function createMirroredCube(size: number, pattern: boolean[][]) {
   return cube;
 }
 
-function createRandomSymmetricPattern(
-  size: number,
-  probability: number,
-) {
+function createRandomSymmetricPattern(size: number, probability: number) {
   if (size <= 0) {
     throw new Error("Size must be a positive integer.");
   }
@@ -228,7 +225,6 @@ function handleDraw(
 ) {
   if (canvas) {
     canvas.clear();
-
     // This keeps the cube evenly sized.
     canvas.scale = 300 / size;
 
@@ -240,37 +236,93 @@ function handleDraw(
   }
 }
 
+function handleUpdateColor(
+  canvas: IsometricCanvas | null,
+  colorPalette: ColorPalette,
+) {
+  updateColor(canvas, colorPalette);
+  updateBackgroundColor(canvas, colorPalette);
+}
+
+export type UseCubeProps = {
+  size: number;
+  shape: Shape;
+  color: string;
+  probability: number;
+};
 
 function useCube(
-  size: number,
-  shape: Shape,
-  color: string,
-  probability: number,
+  props: UseCubeProps = {
+    size: 3,
+    shape: "symmetric",
+    color: "#ffffff",
+    probability: 0.8,
+  },
 ) {
-  const [seed, setSeed] = useState(crypto.randomUUID());
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [size, setSize] = useState(props.size);
+  const [shape, setShape] = useState<Shape>(props.shape);
+  const [color, setColor] = useState(props.color);
+  const [probability, setProbability] = useState(props.probability);
+
   const colorPalette = createColorPalette(color);
   const { ref, downloadSVG, clear, canvas, isReady } = useIsometricCanvas();
 
-  function handleOnRegenerate() {
-    setSeed(crypto.randomUUID());
+  function handleRegenerate() {
+    if (isReady) {
+      handleDraw(canvas, size, shape, probability);
+    }
   }
 
-  useEffect(() => {
-    if (isReady) {
-      handleDraw(canvas, size, shape, probability)
-    };
-  }, [canvas, isReady, probability, shape, size, seed]);
+  if (isInitialLoad && isReady) {
+    handleUpdateColor(canvas, colorPalette);
+    handleDraw(canvas, size, shape, probability);
+    setIsInitialLoad(false);
+  }
 
-  useEffect(() => {
-    updateColor(canvas, colorPalette)
-    updateBackgroundColor(canvas, colorPalette)
-  }, [canvas, colorPalette]);
+  const inputProps = {
+    size: {
+      value: size,
+      min: "3",
+      max: "7",
+      step: "2",
+      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+        setSize(Number.parseInt(event.target.value));
+        handleRegenerate();
+      },
+    },
+    shape: {
+      value: shape,
+      onChange: (event: ChangeEvent<HTMLSelectElement>) => {
+        setShape(event.target.value as Shape);
+        handleRegenerate();
+      },
+    },
+    color: {
+      value: color,
+      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+        setColor(event.target.value);
+        handleUpdateColor(canvas, colorPalette);
+      },
+    },
+    probability: {
+      value: probability,
+      min: "0.1",
+      max: "0.9",
+      step: "0.1",
+      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+        setProbability(Number.parseFloat(event.target.value));
+        handleRegenerate();
+      },
+    },
+  };
 
   return {
     ref,
     downloadSVG,
     clear,
-    regenerate: handleOnRegenerate,
+    regenerate: handleRegenerate,
+    inputProps,
   };
 }
 

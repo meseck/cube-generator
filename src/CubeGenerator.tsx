@@ -1,26 +1,8 @@
-import { ChangeEvent, useState } from "react";
-import useCube, { Shape } from "./useCube.tsx";
+import useCube from "./useCube.tsx";
 import styles from "./CubeGenerator.module.css";
 
 function CubeGenerator() {
-  const [size, setSize] = useState(3);
-  const [shape, setShape] = useState<Shape>("symmetric");
-  const [color, setColor] = useState("#ffffff");
-  const [probability, setProbability] = useState(0.8);
-
-  const { ref, regenerate, downloadSVG } = useCube(size, shape, color, probability);
-
-  function handleShapeChange(event: ChangeEvent<HTMLSelectElement>) {
-    setShape(event.target.value as Shape);
-  } function handleProbabilityChange(event: ChangeEvent<HTMLInputElement>) { setProbability(parseFloat(event.target.value)); }
-
-  function handleSizeChange(event: ChangeEvent<HTMLInputElement>) {
-    setSize(parseInt(event.target.value));
-  }
-
-  function handleOnChangeColor(event: ChangeEvent<HTMLInputElement>) {
-    setColor(event.target.value);
-  }
+  const { ref, inputProps, regenerate, downloadSVG } = useCube();
 
   function handleOnRegenerate() {
     regenerate();
@@ -32,11 +14,11 @@ function CubeGenerator() {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.canvas} ref={ref}></div>
+      <div className={styles.canvas} ref={ref} />
       <div className={styles.menu}>
         <div className={styles.input}>
           <label htmlFor="size">Shape</label>
-          <select id="shape" value={shape} onChange={handleShapeChange}>
+          <select id="shape" {...inputProps.shape}>
             <option value="symmetric">Symmetric</option>
             <option value="asymmetric">Asymmetric</option>
           </select>
@@ -47,11 +29,7 @@ function CubeGenerator() {
             className={styles.slider}
             id="size"
             type="range"
-            min="3"
-            max="7"
-            step="2"
-            value={size}
-            onChange={handleSizeChange}
+            {...inputProps.size}
           />
         </div>
         <div className={styles.input}>
@@ -60,21 +38,12 @@ function CubeGenerator() {
             className={styles.slider}
             id="probability"
             type="range"
-            min="0.1"
-            max="0.9"
-            step="0.1"
-            value={probability}
-            onChange={handleProbabilityChange}
+            {...inputProps.probability}
           />
         </div>
         <div className={styles.input}>
           <label htmlFor="color">Color</label>
-          <input
-            id="color"
-            type="color"
-            value={color}
-            onChange={handleOnChangeColor}
-          />
+          <input id="color" type="color" {...inputProps.color} />
         </div>
         <div className={styles.actions}>
           <button type="button" onClick={handleDownload}>

@@ -13,12 +13,12 @@ function useIsometricCanvas() {
   function handleDownloadSVG() {
     if (canvasRef.current) {
       const svg = canvasRef.current.getElement().outerHTML;
-      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const blob = new Blob([svg], { type: "image/svg+xml" });
       const blobURL = URL.createObjectURL(blob);
 
-      const tempAnchor = document.createElement('a') as HTMLAnchorElement;
+      const tempAnchor = document.createElement("a") as HTMLAnchorElement;
       tempAnchor.href = blobURL;
-      tempAnchor.download = 'cube.svg';
+      tempAnchor.download = "cube.svg";
       document.body.appendChild(tempAnchor);
       tempAnchor.click();
 
@@ -31,14 +31,14 @@ function useIsometricCanvas() {
     if (ref.current) {
       const canvas = new IsometricCanvas({
         container: ref.current,
-        backgroundColor: "#00000000",
+        backgroundColor: "#000000",
         scale: 100,
         width: 800,
         height: 800,
       });
 
       // Add missing namespace
-      canvas.getElement().setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      canvas.getElement().setAttribute("xmlns", "http://www.w3.org/2000/svg");
 
       canvasRef.current = canvas;
       setIsReady(true);
