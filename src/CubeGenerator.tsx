@@ -1,16 +1,16 @@
 import useCube from "./useCube.tsx";
 import styles from "./CubeGenerator.module.css";
 
-function CubeGenerator() {
+const CubeGenerator = () => {
   const { ref, inputProps, regenerate, downloadSVG } = useCube();
 
-  function handleOnRegenerate() {
+  const handleOnRegenerate = () => {
     regenerate();
-  }
+  };
 
-  function handleDownload() {
+  const handleDownload = () => {
     downloadSVG();
-  }
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -56,6 +56,6 @@ function CubeGenerator() {
       </div>
     </div>
   );
-}
+};
 
 export default CubeGenerator;

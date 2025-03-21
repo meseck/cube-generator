@@ -18,7 +18,7 @@ export type ColorPalette = {
   darkShade: string;
 };
 
-function createColorPalette(color: string): ColorPalette {
+const createColorPalette = (color: string): ColorPalette => {
   const baseColorRGB = hexToRGB(color);
   const baseColor = convert(baseColorRGB, sRGB, OKLCH);
 
@@ -32,34 +32,40 @@ function createColorPalette(color: string): ColorPalette {
     lightShade: serialize(lightColor, OKLCH, sRGB),
     darkShade: serialize(darkColor, OKLCH, sRGB),
   };
-}
+};
 
-const defaultColorPalette = createColorPalette("#ffffff");
-
-function getRandomBoolean(probability: number) {
+const getRandomBoolean = (probability: number) => {
   if (probability < 0 || probability > 1) {
     throw new Error("Probability must be between 0 and 1");
   }
   // Return true with the given probability, else false
   return Math.random() < probability;
-}
+};
 
-function drawAsymmetricCubeGrid(size: number, probability: number) {
+const drawAsymmetricCubeGrid = (
+  size: number,
+  probability: number,
+  colorPalette: ColorPalette,
+) => {
   const cubeGrid = new IsometricGroup();
 
   for (let x = 0; x < size; x++) {
     for (let y = 0; y < size; y++) {
       for (let z = 0; z < size; z++) {
         if (getRandomBoolean(probability)) {
-          cubeGrid.addChild(drawCube(x, y, z));
+          cubeGrid.addChild(drawCube(x, y, z, colorPalette));
         }
       }
     }
   }
   return cubeGrid;
-}
+};
 
-function drawSymmetricCubeGrid(size: number, probability: number) {
+const drawSymmetricCubeGrid = (
+  size: number,
+  probability: number,
+  colorPalette: ColorPalette,
+) => {
   const cubeGrid = new IsometricGroup();
   const pattern = createRandomSymmetricPattern(size, probability);
   const mirroredCube = createMirroredCube(size, pattern);
@@ -68,18 +74,18 @@ function drawSymmetricCubeGrid(size: number, probability: number) {
     for (let y = 0; y < size; y++) {
       for (let z = 0; z < size; z++) {
         if (mirroredCube[x][y][z]) {
-          cubeGrid.addChild(drawCube(x, y, z));
+          cubeGrid.addChild(drawCube(x, y, z, colorPalette));
         }
       }
     }
   }
   return cubeGrid;
-}
+};
 
-function updateColor(
+const updateColor = (
   canvas: IsometricCanvas | null,
   colorPalette: ColorPalette,
-) {
+) => {
   if (canvas) {
     const cubes = canvas.getElement().getElementsByTagName("g");
     for (const cube of cubes) {
@@ -92,43 +98,48 @@ function updateColor(
       sides[0].setAttribute("stroke", colorPalette.darkShade);
     }
   }
-}
+};
 
 // This is a 'hack'. Currently we cannot update the background via the libraries API.
-function updateBackgroundColor(
+const updateBackgroundColor = (
   canvas: IsometricCanvas | null,
   colorPalette: ColorPalette,
-) {
+) => {
   if (canvas) {
     const background = canvas.getElement().getElementsByTagName("rect")[0];
     background.setAttribute("fill", colorPalette.background);
   }
-}
+};
 
-function drawCube(x: number, y: number, z: number) {
+const drawCube = (
+  x: number,
+  y: number,
+  z: number,
+  colorPalette: ColorPalette,
+) => {
   const commonProps: Omit<IsometricRectangleProps, "planeView"> = {
     height: 1,
     width: 1,
-    strokeColor: defaultColorPalette.darkShade,
+    strokeColor: colorPalette.darkShade,
     strokeWidth: 6,
     // fillOpacity: 0.5,
   };
 
   const top = new IsometricRectangle({
     top: 1,
-    fillColor: defaultColorPalette.base,
+    fillColor: colorPalette.base,
     planeView: PlaneView.TOP,
     ...commonProps,
   });
   const right = new IsometricRectangle({
     right: 1,
-    fillColor: defaultColorPalette.lightShade,
+    fillColor: colorPalette.lightShade,
     planeView: PlaneView.FRONT,
     ...commonProps,
   });
   const left = new IsometricRectangle({
     left: 1,
-    fillColor: defaultColorPalette.darkShade,
+    fillColor: colorPalette.darkShade,
     planeView: PlaneView.SIDE,
     ...commonProps,
   });
@@ -138,9 +149,9 @@ function drawCube(x: number, y: number, z: number) {
   // Let user remove individual cubes via mouse click.
   cube.addEventListener("click", () => cube.getElement().remove());
   return cube;
-}
+};
 
-function createMirroredCube(size: number, pattern: boolean[][]) {
+const createMirroredCube = (size: number, pattern: boolean[][]) => {
   const cube: boolean[][][] = new Array(size);
 
   for (let x = 0; x < size; x++) {
@@ -175,9 +186,9 @@ function createMirroredCube(size: number, pattern: boolean[][]) {
   }
 
   return cube;
-}
+};
 
-function createRandomSymmetricPattern(size: number, probability: number) {
+const createRandomSymmetricPattern = (size: number, probability: number) => {
   if (size <= 0) {
     throw new Error("Size must be a positive integer.");
   }
@@ -215,34 +226,35 @@ function createRandomSymmetricPattern(size: number, probability: number) {
   }
 
   return pattern;
-}
+};
 
-function handleDraw(
+const handleDraw = (
   canvas: IsometricCanvas | null,
   size: number,
   shape: Shape,
   probability: number,
-) {
+  colorPalette: ColorPalette,
+) => {
   if (canvas) {
     canvas.clear();
     // This keeps the cube evenly sized.
     canvas.scale = 300 / size;
 
     if (shape === "symmetric") {
-      canvas.addChild(drawSymmetricCubeGrid(size, probability));
+      canvas.addChild(drawSymmetricCubeGrid(size, probability, colorPalette));
     } else {
-      canvas.addChild(drawAsymmetricCubeGrid(size, probability));
+      canvas.addChild(drawAsymmetricCubeGrid(size, probability, colorPalette));
     }
   }
-}
+};
 
-function handleUpdateColor(
+const handleUpdateColor = (
   canvas: IsometricCanvas | null,
   colorPalette: ColorPalette,
-) {
+) => {
   updateColor(canvas, colorPalette);
   updateBackgroundColor(canvas, colorPalette);
-}
+};
 
 export type UseCubeProps = {
   size: number;
@@ -251,14 +263,14 @@ export type UseCubeProps = {
   probability: number;
 };
 
-function useCube(
+const useCube = (
   props: UseCubeProps = {
     size: 3,
     shape: "symmetric",
     color: "#ffffff",
     probability: 0.8,
   },
-) {
+) => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [size, setSize] = useState(props.size);
   const [shape, setShape] = useState<Shape>(props.shape);
@@ -268,15 +280,15 @@ function useCube(
   const colorPalette = createColorPalette(color);
   const { ref, downloadSVG, clear, canvas, isReady } = useIsometricCanvas();
 
-  function handleRegenerate() {
+  const handleRegenerate = () => {
     if (isReady) {
-      handleDraw(canvas, size, shape, probability);
+      handleDraw(canvas, size, shape, probability, colorPalette);
     }
-  }
+  };
 
   if (isInitialLoad && isReady) {
     handleUpdateColor(canvas, colorPalette);
-    handleDraw(canvas, size, shape, probability);
+    handleDraw(canvas, size, shape, probability, colorPalette);
     setIsInitialLoad(false);
   }
 
@@ -324,6 +336,6 @@ function useCube(
     regenerate: handleRegenerate,
     inputProps,
   };
-}
+};
 
 export default useCube;

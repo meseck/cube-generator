@@ -1,12 +1,12 @@
 import "./App.css";
 import CubeGenerator from "./CubeGenerator.tsx";
 
-function App() {
+const App = () => {
   return (
     <>
       <CubeGenerator />
     </>
   );
-}
+};
 
 export default App;

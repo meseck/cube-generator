@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { IsometricCanvas } from "@elchininet/isometric";
 
-function useIsometricCanvas() {
+const useIsometricCanvas = () => {
   const ref = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<IsometricCanvas | null>(null);
   const [isReady, setIsReady] = useState(false);
 
-  function handleClear() {
+  const handleClear = () => {
     canvasRef.current?.clear();
-  }
+  };
 
-  function handleDownloadSVG() {
+  const handleDownloadSVG = () => {
     if (canvasRef.current) {
       const svg = canvasRef.current.getElement().outerHTML;
       const blob = new Blob([svg], { type: "image/svg+xml" });
@@ -25,7 +25,7 @@ function useIsometricCanvas() {
       document.body.removeChild(tempAnchor);
       URL.revokeObjectURL(blobURL);
     }
-  }
+  };
 
   useEffect(() => {
     if (ref.current) {
@@ -56,6 +56,6 @@ function useIsometricCanvas() {
     clear: handleClear,
     isReady,
   };
-}
+};
 
 export default useIsometricCanvas;
