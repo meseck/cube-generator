@@ -17,40 +17,44 @@ const CubeGenerator = () => {
       <div className={styles.menu}>
         <fieldset className={styles.fieldset}>
           <legend>Cube</legend>
-          <label htmlFor="size">Shape</label>
-          <select id="shape" {...inputProps.shape}>
-            <option value="symmetric">Symmetric</option>
-            <option value="asymmetric">Asymmetric</option>
-          </select>
-          <label htmlFor="size">Size</label>
-          <input
-            className={styles.slider}
-            id="size"
-            type="range"
-            {...inputProps.size}
-          />
-          <label htmlFor="probability">Density</label>
-          <input
-            className={styles.slider}
-            id="probability"
-            type="range"
-            {...inputProps.probability}
-          />
+          <div className={styles.fieldsetContent}>
+            <label htmlFor="size">Shape</label>
+            <select id="shape" {...inputProps.shape}>
+              <option value="symmetric">Symmetric</option>
+              <option value="asymmetric">Asymmetric</option>
+            </select>
+            <label htmlFor="size">Size</label>
+            <input
+              className={styles.slider}
+              id="size"
+              type="range"
+              {...inputProps.size}
+            />
+            <label htmlFor="probability">Density</label>
+            <input
+              className={styles.slider}
+              id="probability"
+              type="range"
+              {...inputProps.probability}
+            />
+          </div>
         </fieldset>
         <fieldset className={styles.fieldset}>
           <legend>Color</legend>
-          <label htmlFor="baseColor">Base</label>
-          <input id="baseColor" type="color" {...inputProps.baseColor} />
-          <label htmlFor="leftColor">Left</label>
-          <input id="leftColor" type="color" {...inputProps.leftColor} />
-          <label htmlFor="rightColor">Right</label>
-          <input id="rightColor" type="color" {...inputProps.rightColor} />
-          <label htmlFor="backgroundColor">Background</label>
-          <input
-            id="backgroundColor"
-            type="color"
-            {...inputProps.backgroundColor}
-          />
+          <div className={styles.fieldsetContent}>
+            <label htmlFor="baseColor">Base</label>
+            <input id="baseColor" type="color" {...inputProps.baseColor} />
+            <label htmlFor="leftColor">Left</label>
+            <input id="leftColor" type="color" {...inputProps.leftColor} />
+            <label htmlFor="rightColor">Right</label>
+            <input id="rightColor" type="color" {...inputProps.rightColor} />
+            <label htmlFor="backgroundColor">Background</label>
+            <input
+              id="backgroundColor"
+              type="color"
+              {...inputProps.backgroundColor}
+            />
+          </div>
         </fieldset>
       </div>
       <div className={styles.actions}>
