@@ -3,7 +3,6 @@ import styles from "./CubeGenerator.module.css";
 
 const CubeGenerator = () => {
   const { ref, inputProps, regenerate, downloadSVG } = useCube();
-
   const handleOnRegenerate = () => {
     regenerate();
   };
@@ -16,14 +15,13 @@ const CubeGenerator = () => {
     <div className={styles.wrapper}>
       <div className={styles.canvas} ref={ref} />
       <div className={styles.menu}>
-        <div className={styles.input}>
+        <fieldset className={styles.fieldset}>
+          <legend>Cube</legend>
           <label htmlFor="size">Shape</label>
           <select id="shape" {...inputProps.shape}>
             <option value="symmetric">Symmetric</option>
             <option value="asymmetric">Asymmetric</option>
           </select>
-        </div>
-        <div className={styles.input}>
           <label htmlFor="size">Size</label>
           <input
             className={styles.slider}
@@ -31,8 +29,6 @@ const CubeGenerator = () => {
             type="range"
             {...inputProps.size}
           />
-        </div>
-        <div className={styles.input}>
           <label htmlFor="probability">Density</label>
           <input
             className={styles.slider}
@@ -40,19 +36,30 @@ const CubeGenerator = () => {
             type="range"
             {...inputProps.probability}
           />
-        </div>
-        <div className={styles.input}>
-          <label htmlFor="color">Color</label>
-          <input id="color" type="color" {...inputProps.color} />
-        </div>
-        <div className={styles.actions}>
-          <button type="button" onClick={handleDownload}>
-            Download SVG
-          </button>
-          <button type="button" onClick={handleOnRegenerate}>
-            Regenerate
-          </button>
-        </div>
+        </fieldset>
+        <fieldset className={styles.fieldset}>
+          <legend>Color</legend>
+          <label htmlFor="baseColor">Base</label>
+          <input id="baseColor" type="color" {...inputProps.baseColor} />
+          <label htmlFor="leftColor">Left</label>
+          <input id="leftColor" type="color" {...inputProps.leftColor} />
+          <label htmlFor="rightColor">Right</label>
+          <input id="rightColor" type="color" {...inputProps.rightColor} />
+          <label htmlFor="backgroundColor">Background</label>
+          <input
+            id="backgroundColor"
+            type="color"
+            {...inputProps.backgroundColor}
+          />
+        </fieldset>
+      </div>
+      <div className={styles.actions}>
+        <button type="button" onClick={handleDownload}>
+          Download SVG
+        </button>
+        <button type="button" onClick={handleOnRegenerate}>
+          Regenerate
+        </button>
       </div>
     </div>
   );

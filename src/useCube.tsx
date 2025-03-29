@@ -7,30 +7,30 @@ import {
 } from "@elchininet/isometric";
 import useIsometricCanvas from "./useIsometricCanvas.tsx";
 import { type ChangeEvent, useState } from "react";
-import { convert, hexToRGB, OKLCH, serialize, sRGB } from "@texel/color";
+import { convert, hexToRGB, OKLCH, sRGB, RGBToHex } from "@texel/color";
 
 export type Shape = "symmetric" | "asymmetric";
 
 export type ColorPalette = {
-  base: string;
-  background: string;
-  lightShade: string;
-  darkShade: string;
+  baseColor: string;
+  leftColor: string;
+  rightColor: string;
+  backgroundColor: string;
 };
 
 const createColorPalette = (color: string): ColorPalette => {
   const baseColorRGB = hexToRGB(color);
   const baseColor = convert(baseColorRGB, sRGB, OKLCH);
 
-  const lightColor = [baseColor[0] / 2, baseColor[1], baseColor[2]];
-  const darkColor = [baseColor[0] / 3, baseColor[1], baseColor[2]];
+  const leftColor = [baseColor[0] / 2, baseColor[1], baseColor[2]];
+  const rightColor = [baseColor[0] / 3, baseColor[1], baseColor[2]];
   const backgroundColor = [baseColor[0] / 10, baseColor[1], baseColor[2]];
 
   return {
-    base: serialize(baseColor, OKLCH, sRGB),
-    background: serialize(backgroundColor, OKLCH, sRGB),
-    lightShade: serialize(lightColor, OKLCH, sRGB),
-    darkShade: serialize(darkColor, OKLCH, sRGB),
+    baseColor: RGBToHex(convert(baseColor, OKLCH, sRGB)),
+    leftColor: RGBToHex(convert(leftColor, OKLCH, sRGB)),
+    rightColor: RGBToHex(convert(rightColor, OKLCH, sRGB)),
+    backgroundColor: RGBToHex(convert(backgroundColor, OKLCH, sRGB)),
   };
 };
 
@@ -90,12 +90,12 @@ const updateColor = (
     const cubes = canvas.getElement().getElementsByTagName("g");
     for (const cube of cubes) {
       const sides = cube.getElementsByTagName("path");
-      sides[0].setAttribute("fill", colorPalette.base);
-      sides[1].setAttribute("fill", colorPalette.lightShade);
-      sides[2].setAttribute("fill", colorPalette.darkShade);
-      sides[1].setAttribute("stroke", colorPalette.darkShade);
-      sides[2].setAttribute("stroke", colorPalette.darkShade);
-      sides[0].setAttribute("stroke", colorPalette.darkShade);
+      sides[0].setAttribute("fill", colorPalette.baseColor);
+      sides[1].setAttribute("fill", colorPalette.leftColor);
+      sides[2].setAttribute("fill", colorPalette.rightColor);
+      sides[1].setAttribute("stroke", colorPalette.rightColor);
+      sides[2].setAttribute("stroke", colorPalette.rightColor);
+      sides[0].setAttribute("stroke", colorPalette.rightColor);
     }
   }
 };
@@ -103,11 +103,11 @@ const updateColor = (
 // This is a 'hack'. Currently we cannot update the background via the libraries API.
 const updateBackgroundColor = (
   canvas: IsometricCanvas | null,
-  colorPalette: ColorPalette,
+  backgroundColor: string,
 ) => {
   if (canvas) {
     const background = canvas.getElement().getElementsByTagName("rect")[0];
-    background.setAttribute("fill", colorPalette.background);
+    background.setAttribute("fill", backgroundColor);
   }
 };
 
@@ -120,26 +120,26 @@ const drawCube = (
   const commonProps: Omit<IsometricRectangleProps, "planeView"> = {
     height: 1,
     width: 1,
-    strokeColor: colorPalette.darkShade,
+    strokeColor: colorPalette.rightColor,
     strokeWidth: 6,
     // fillOpacity: 0.5,
   };
 
   const top = new IsometricRectangle({
     top: 1,
-    fillColor: colorPalette.base,
+    fillColor: colorPalette.baseColor,
     planeView: PlaneView.TOP,
     ...commonProps,
   });
   const right = new IsometricRectangle({
     right: 1,
-    fillColor: colorPalette.lightShade,
+    fillColor: colorPalette.leftColor,
     planeView: PlaneView.FRONT,
     ...commonProps,
   });
   const left = new IsometricRectangle({
     left: 1,
-    fillColor: colorPalette.darkShade,
+    fillColor: colorPalette.rightColor,
     planeView: PlaneView.SIDE,
     ...commonProps,
   });
@@ -248,18 +248,26 @@ const handleDraw = (
   }
 };
 
+const handleUpdateBaseColor = (
+  canvas: IsometricCanvas | null,
+  colorPalette: ColorPalette,
+) => {
+  updateColor(canvas, colorPalette);
+  updateBackgroundColor(canvas, colorPalette.backgroundColor);
+};
+
 const handleUpdateColor = (
   canvas: IsometricCanvas | null,
   colorPalette: ColorPalette,
 ) => {
   updateColor(canvas, colorPalette);
-  updateBackgroundColor(canvas, colorPalette);
+  updateBackgroundColor(canvas, colorPalette.backgroundColor);
 };
 
 export type UseCubeProps = {
   size: number;
   shape: Shape;
-  color: string;
+  colorPalette: ColorPalette;
   probability: number;
 };
 
@@ -267,18 +275,36 @@ const useCube = (
   props: UseCubeProps = {
     size: 3,
     shape: "symmetric",
-    color: "#ffffff",
+    colorPalette: {
+      baseColor: "#ffffff",
+      leftColor: "#675a5a",
+      rightColor: "#3b2f2f",
+      backgroundColor: "#060202",
+    },
     probability: 0.8,
   },
 ) => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [size, setSize] = useState(props.size);
   const [shape, setShape] = useState<Shape>(props.shape);
-  const [color, setColor] = useState(props.color);
+
+  const [baseColor, setBaseColor] = useState(props.colorPalette.baseColor);
+  const [leftColor, setLeftColor] = useState(props.colorPalette.leftColor);
+  const [rightColor, setRightColor] = useState(props.colorPalette.rightColor);
+  const [backgroundColor, setBackgroundColor] = useState(
+    props.colorPalette.backgroundColor,
+  );
+
   const [probability, setProbability] = useState(props.probability);
 
-  const colorPalette = createColorPalette(color);
+  const colorPalette = createColorPalette(baseColor);
   const { ref, downloadSVG, clear, canvas, isReady } = useIsometricCanvas();
+
+  const handleSyncColors = (colorPalette: ColorPalette) => {
+    setLeftColor(colorPalette.leftColor);
+    setRightColor(colorPalette.rightColor);
+    setBackgroundColor(colorPalette.backgroundColor);
+  };
 
   const handleRegenerate = () => {
     if (isReady) {
@@ -287,7 +313,7 @@ const useCube = (
   };
 
   if (isInitialLoad && isReady) {
-    handleUpdateColor(canvas, colorPalette);
+    handleUpdateBaseColor(canvas, colorPalette);
     handleDraw(canvas, size, shape, probability, colorPalette);
     setIsInitialLoad(false);
   }
@@ -310,11 +336,48 @@ const useCube = (
         handleRegenerate();
       },
     },
-    color: {
-      value: color,
+    baseColor: {
+      value: baseColor,
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        setColor(event.target.value);
-        handleUpdateColor(canvas, colorPalette);
+        setBaseColor(event.target.value);
+        handleSyncColors(colorPalette);
+        handleUpdateBaseColor(canvas, colorPalette);
+      },
+    },
+    leftColor: {
+      value: leftColor,
+      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+        setLeftColor(event.target.value);
+        handleUpdateColor(canvas, {
+          baseColor: baseColor,
+          leftColor: leftColor,
+          rightColor: rightColor,
+          backgroundColor: backgroundColor,
+        });
+      },
+    },
+    rightColor: {
+      value: rightColor,
+      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+        setRightColor(event.target.value);
+        handleUpdateColor(canvas, {
+          baseColor: baseColor,
+          leftColor: leftColor,
+          rightColor: rightColor,
+          backgroundColor: backgroundColor,
+        });
+      },
+    },
+    backgroundColor: {
+      value: backgroundColor,
+      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+        setBackgroundColor(event.target.value);
+        handleUpdateColor(canvas, {
+          baseColor: baseColor,
+          leftColor: leftColor,
+          rightColor: rightColor,
+          backgroundColor: backgroundColor,
+        });
       },
     },
     probability: {
