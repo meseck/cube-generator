@@ -22,8 +22,8 @@ const createColorPalette = (color: string): ColorPalette => {
   const baseColorRGB = hexToRGB(color);
   const baseColor = convert(baseColorRGB, sRGB, OKLCH);
 
-  const leftColor = [baseColor[0] / 2, baseColor[1], baseColor[2]];
-  const rightColor = [baseColor[0] / 3, baseColor[1], baseColor[2]];
+  const leftColor = [baseColor[0] / 3, baseColor[1], baseColor[2]];
+  const rightColor = [baseColor[0] / 2, baseColor[1], baseColor[2]];
   const backgroundColor = [baseColor[0] / 10, baseColor[1], baseColor[2]];
 
   return {
@@ -91,11 +91,11 @@ const updateColor = (
     for (const cube of cubes) {
       const sides = cube.getElementsByTagName("path");
       sides[0].setAttribute("fill", colorPalette.baseColor);
-      sides[1].setAttribute("fill", colorPalette.leftColor);
-      sides[2].setAttribute("fill", colorPalette.rightColor);
-      sides[1].setAttribute("stroke", colorPalette.rightColor);
-      sides[2].setAttribute("stroke", colorPalette.rightColor);
-      sides[0].setAttribute("stroke", colorPalette.rightColor);
+      sides[1].setAttribute("fill", colorPalette.rightColor);
+      sides[2].setAttribute("fill", colorPalette.leftColor);
+      sides[1].setAttribute("stroke", colorPalette.leftColor);
+      sides[2].setAttribute("stroke", colorPalette.leftColor);
+      sides[0].setAttribute("stroke", colorPalette.leftColor);
     }
   }
 };
@@ -120,7 +120,7 @@ const drawCube = (
   const commonProps: Omit<IsometricRectangleProps, "planeView"> = {
     height: 1,
     width: 1,
-    strokeColor: colorPalette.rightColor,
+    strokeColor: colorPalette.leftColor,
     strokeWidth: 6,
     // fillOpacity: 0.5,
   };
@@ -133,13 +133,13 @@ const drawCube = (
   });
   const right = new IsometricRectangle({
     right: 1,
-    fillColor: colorPalette.leftColor,
+    fillColor: colorPalette.rightColor,
     planeView: PlaneView.FRONT,
     ...commonProps,
   });
   const left = new IsometricRectangle({
     left: 1,
-    fillColor: colorPalette.rightColor,
+    fillColor: colorPalette.leftColor,
     planeView: PlaneView.SIDE,
     ...commonProps,
   });
@@ -269,8 +269,8 @@ const useCube = (
     shape: "symmetric",
     colorPalette: {
       baseColor: "#ffffff",
-      leftColor: "#675a5a",
-      rightColor: "#3b2f2f",
+      leftColor: "#3b2f2f",
+      rightColor: "#675a5a",
       backgroundColor: "#060202",
     },
     probability: 0.8,
@@ -347,36 +347,21 @@ const useCube = (
       value: leftColor,
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
         setLeftColor(event.target.value);
-        handleUpdateColor(canvas, {
-          baseColor: baseColor,
-          leftColor: leftColor,
-          rightColor: rightColor,
-          backgroundColor: backgroundColor,
-        });
+        handleUpdateColor(canvas, colors);
       },
     },
     rightColor: {
       value: rightColor,
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
         setRightColor(event.target.value);
-        handleUpdateColor(canvas, {
-          baseColor: baseColor,
-          leftColor: leftColor,
-          rightColor: rightColor,
-          backgroundColor: backgroundColor,
-        });
+        handleUpdateColor(canvas, colors);
       },
     },
     backgroundColor: {
       value: backgroundColor,
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
         setBackgroundColor(event.target.value);
-        handleUpdateColor(canvas, {
-          baseColor: baseColor,
-          leftColor: leftColor,
-          rightColor: rightColor,
-          backgroundColor: backgroundColor,
-        });
+        handleUpdateColor(canvas, colors);
       },
     },
     probability: {
