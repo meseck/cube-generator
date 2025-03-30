@@ -42,7 +42,7 @@ const CubeGenerator = () => {
         <fieldset className={styles.fieldset}>
           <legend>Color</legend>
           <div className={styles.fieldsetContent}>
-            <label htmlFor="baseColor">Base</label>
+            <label htmlFor="baseColor">Top/Base</label>
             <input id="baseColor" type="color" {...inputProps.baseColor} />
             <label htmlFor="leftColor">Left</label>
             <input id="leftColor" type="color" {...inputProps.leftColor} />
