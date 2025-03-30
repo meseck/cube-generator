@@ -248,14 +248,6 @@ const handleDraw = (
   }
 };
 
-const handleUpdateBaseColor = (
-  canvas: IsometricCanvas | null,
-  colorPalette: ColorPalette,
-) => {
-  updateColor(canvas, colorPalette);
-  updateBackgroundColor(canvas, colorPalette.backgroundColor);
-};
-
 const handleUpdateColor = (
   canvas: IsometricCanvas | null,
   colorPalette: ColorPalette,
@@ -295,12 +287,19 @@ const useCube = (
     props.colorPalette.backgroundColor,
   );
 
+  const colors = {
+    baseColor,
+    leftColor,
+    rightColor,
+    backgroundColor,
+  };
+
   const [probability, setProbability] = useState(props.probability);
 
-  const colorPalette = createColorPalette(baseColor);
   const { ref, downloadSVG, clear, canvas, isReady } = useIsometricCanvas();
 
-  const handleSyncColors = (colorPalette: ColorPalette) => {
+  const handleSyncColors = () => {
+    const colorPalette = createColorPalette(baseColor);
     setLeftColor(colorPalette.leftColor);
     setRightColor(colorPalette.rightColor);
     setBackgroundColor(colorPalette.backgroundColor);
@@ -308,13 +307,13 @@ const useCube = (
 
   const handleRegenerate = () => {
     if (isReady) {
-      handleDraw(canvas, size, shape, probability, colorPalette);
+      handleDraw(canvas, size, shape, probability, colors);
     }
   };
 
   if (isInitialLoad && isReady) {
-    handleUpdateBaseColor(canvas, colorPalette);
-    handleDraw(canvas, size, shape, probability, colorPalette);
+    handleUpdateColor(canvas, colors);
+    handleDraw(canvas, size, shape, probability, colors);
     setIsInitialLoad(false);
   }
 
@@ -340,8 +339,8 @@ const useCube = (
       value: baseColor,
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
         setBaseColor(event.target.value);
-        handleSyncColors(colorPalette);
-        handleUpdateBaseColor(canvas, colorPalette);
+        handleSyncColors();
+        handleUpdateColor(canvas, colors);
       },
     },
     leftColor: {
