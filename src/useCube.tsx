@@ -269,9 +269,9 @@ const useCube = (
     shape: "symmetric",
     colorPalette: {
       baseColor: "#ffffff",
-      leftColor: "#3b2f2f",
-      rightColor: "#675a5a",
-      backgroundColor: "#060202",
+      leftColor: "#373535",
+      rightColor: "#646161",
+      backgroundColor: "#040303",
     },
     probability: 0.8,
   },
