@@ -5,6 +5,11 @@
 
 .canvas {
   display: grid;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #040303;
 
   & svg {
     width: 100%;
@@ -26,6 +31,7 @@
 
 .fieldset {
   height: 100%;
+  border: 1px solid gray;
   border-radius: 10px;
 }
 
