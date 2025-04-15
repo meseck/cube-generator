@@ -31,7 +31,8 @@
 
 .fieldset {
   height: 100%;
-  border: 1px solid gray;
+  border: var(--cube-generator-border-size) solid
+    var(--cube-generator-border-color);
   border-radius: 10px;
 }
 

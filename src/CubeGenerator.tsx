@@ -1,5 +1,6 @@
-import useCube from "./useCube.tsx";
+import "./variables.css";
 import styles from "./CubeGenerator.module.css";
+import useCube from "./useCube.tsx";
 
 const CubeGenerator = () => {
   const { ref, inputProps, regenerate, downloadSVG } = useCube();
@@ -12,7 +13,7 @@ const CubeGenerator = () => {
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div id="cube-generator" className={styles.wrapper}>
       <div className={styles.canvas} ref={ref} />
       <div className={styles.menu}>
         <fieldset className={styles.fieldset}>
