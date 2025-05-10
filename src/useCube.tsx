@@ -324,15 +324,17 @@ const useCube = (
       max: "7",
       step: "2",
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        setSize(Number.parseInt(event.target.value));
-        handleRegenerate();
+        const size = Number(event.target.value);
+        setSize(size);
+        handleDraw(canvas, size, shape, probability, colors);
       },
     },
     shape: {
       value: shape,
       onChange: (event: ChangeEvent<HTMLSelectElement>) => {
-        setShape(event.target.value as Shape);
-        handleRegenerate();
+        const shape = event.target.value as Shape;
+        setShape(shape);
+        handleDraw(canvas, size, shape, probability, colors);
       },
     },
     baseColor: {
@@ -370,8 +372,9 @@ const useCube = (
       max: "0.9",
       step: "0.1",
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        setProbability(Number.parseFloat(event.target.value));
-        handleRegenerate();
+        const probability = Number.parseFloat(event.target.value);
+        setProbability(probability);
+        handleDraw(canvas, size, shape, probability, colors);
       },
     },
   };
