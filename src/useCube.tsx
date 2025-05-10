@@ -298,11 +298,19 @@ const useCube = (
 
   const { ref, downloadSVG, clear, canvas, isReady } = useIsometricCanvas();
 
-  const handleSyncColors = () => {
-    const colorPalette = createColorPalette(baseColor);
+  const handleSyncColors = (newBaseColor: string) => {
+    const colorPalette = createColorPalette(newBaseColor);
+
     setLeftColor(colorPalette.leftColor);
     setRightColor(colorPalette.rightColor);
     setBackgroundColor(colorPalette.backgroundColor);
+
+    handleUpdateColor(canvas, {
+      baseColor: newBaseColor,
+      leftColor: colorPalette.leftColor,
+      rightColor: colorPalette.rightColor,
+      backgroundColor: colorPalette.backgroundColor,
+    });
   };
 
   const handleRegenerate = () => {
@@ -324,46 +332,61 @@ const useCube = (
       max: "7",
       step: "2",
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        const size = Number(event.target.value);
-        setSize(size);
-        handleDraw(canvas, size, shape, probability, colors);
+        const newSize = Number(event.target.value);
+        setSize(newSize);
+        handleDraw(canvas, newSize, shape, probability, colors);
       },
     },
     shape: {
       value: shape,
       onChange: (event: ChangeEvent<HTMLSelectElement>) => {
-        const shape = event.target.value as Shape;
-        setShape(shape);
-        handleDraw(canvas, size, shape, probability, colors);
+        const newShape = event.target.value as Shape;
+        setShape(newShape);
+        handleDraw(canvas, size, newShape, probability, colors);
       },
     },
     baseColor: {
       value: baseColor,
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        setBaseColor(event.target.value);
-        handleSyncColors();
-        handleUpdateColor(canvas, colors);
+        const newColor = event.target.value;
+        setBaseColor(newColor);
+        handleSyncColors(newColor);
       },
     },
     leftColor: {
       value: leftColor,
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        setLeftColor(event.target.value);
-        handleUpdateColor(canvas, colors);
+        const newColor = event.target.value;
+        setLeftColor(newColor);
+
+        handleUpdateColor(canvas, {
+          ...colors,
+          leftColor: newColor,
+        });
       },
     },
     rightColor: {
       value: rightColor,
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        setRightColor(event.target.value);
-        handleUpdateColor(canvas, colors);
+        const newColor = event.target.value;
+        setRightColor(newColor);
+
+        handleUpdateColor(canvas, {
+          ...colors,
+          rightColor: newColor,
+        });
       },
     },
     backgroundColor: {
       value: backgroundColor,
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        setBackgroundColor(event.target.value);
-        handleUpdateColor(canvas, colors);
+        const newColor = event.target.value;
+        setBackgroundColor(newColor);
+
+        handleUpdateColor(canvas, {
+          ...colors,
+          backgroundColor: newColor,
+        });
       },
     },
     probability: {
@@ -372,9 +395,9 @@ const useCube = (
       max: "0.9",
       step: "0.1",
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        const probability = Number.parseFloat(event.target.value);
-        setProbability(probability);
-        handleDraw(canvas, size, shape, probability, colors);
+        const newProbability = Number.parseFloat(event.target.value);
+        setProbability(newProbability);
+        handleDraw(canvas, size, shape, newProbability, colors);
       },
     },
   };
